@@ -129,9 +129,14 @@ private:
 	FramebufferPatch framebufferPatches[MaxFramebufferPatchCount] {};
 
 	/**
-	 *  External global variables
+	 *  Framebuffer ig-platform-id/snb-platform-id (framebuffer configuration) table
 	 */
 	void *gPlatformInformationList {nullptr};
+
+	/**
+	 *	Indicates gPlatformInformationList is from SNB framebuffer
+	 *  (Sandy Bridge platform list has unique termination)
+	 */
 	bool gPlatformListIsSNB {false};
 
 	/**
