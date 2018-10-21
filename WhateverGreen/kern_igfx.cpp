@@ -1007,9 +1007,10 @@ void IGFX::applyFramebufferPatches() {
 			success = applyPlatformInformationListPatch(framebufferId, static_cast<FramebufferCFL *>(gPlatformInformationList));
 		else if (&allKexts.kextIntelCNLFb == currentFramebuffer)
 			success = applyPlatformInformationListPatch(framebufferId, static_cast<FramebufferCNL *>(gPlatformInformationList));
-		else if (&allKexts.kextIntelICLLPFb == currentFramebuffer) {
+		else if (&allKexts.kextIntelICLLPFb == currentFramebuffer)
 			success = applyPlatformInformationListPatch(framebufferId, static_cast<FramebufferICLLP *>(gPlatformInformationList));
-		}
+		else if (&allKexts.kextIntelICLHPFb == currentFramebuffer)
+			success = applyPlatformInformationListPatch(framebufferId, static_cast<FramebufferICLHP *>(gPlatformInformationList));
 
 		if (success)
 			DBGLOG("igfx", "Patching framebufferId 0x%08X successful", framebufferId);
@@ -1076,10 +1077,11 @@ void IGFX::applyHdmiAutopatch() {
 		success = applyDPtoHDMIPatch(framebufferId, static_cast<FramebufferCFL *>(gPlatformInformationList));
 	else if (&allKexts.kextIntelCNLFb == currentFramebuffer)
 		success = applyDPtoHDMIPatch(framebufferId, static_cast<FramebufferCNL *>(gPlatformInformationList));
-	else if (&allKexts.kextIntelICLLPFb == currentFramebuffer) {
+	else if (&allKexts.kextIntelICLLPFb == currentFramebuffer)
 		success = applyDPtoHDMIPatch(framebufferId, static_cast<FramebufferICLLP *>(gPlatformInformationList));
-	}
-	
+	else if (&allKexts.kextIntelICLHPFb == currentFramebuffer)
+		success = applyDPtoHDMIPatch(framebufferId, static_cast<FramebufferICLHP *>(gPlatformInformationList));
+
 	if (success)
 		DBGLOG("igfx", "Patching framebufferId 0x%08X successful", framebufferId);
 	else
