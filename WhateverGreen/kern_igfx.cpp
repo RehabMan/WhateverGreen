@@ -32,27 +32,67 @@ static const char *pathIntelICL[]     { "/System/Library/Extensions/AppleIntelIC
 static const char *pathIntelICLLPFb[] { "/System/Library/Extensions/AppleIntelICLLPGraphicsFramebuffer.kext/Contents/MacOS/AppleIntelICLLPGraphicsFramebuffer" };
 static const char *pathIntelICLHPFb[] { "/System/Library/Extensions/AppleIntelICLHPGraphicsFramebuffer.kext/Contents/MacOS/AppleIntelICLHPGraphicsFramebuffer" };
 
-static struct
-{
-	KernelPatcher::KextInfo kextIntelHD3000  { "com.apple.driver.AppleIntelHD3000Graphics", pathIntelHD3000, arrsize(pathIntelHD3000), {}, {}, KernelPatcher::KextInfo::Unloaded };
-	KernelPatcher::KextInfo kextIntelSNBFb   { "com.apple.driver.AppleIntelSNBGraphicsFB", pathIntelSNBFb, arrsize(pathIntelSNBFb), {}, {}, KernelPatcher::KextInfo::Unloaded };
-	KernelPatcher::KextInfo kextIntelHD4000  { "com.apple.driver.AppleIntelHD4000Graphics", pathIntelHD4000, arrsize(pathIntelHD4000), {}, {}, KernelPatcher::KextInfo::Unloaded };
-	KernelPatcher::KextInfo kextIntelCapriFb { "com.apple.driver.AppleIntelFramebufferCapri", pathIntelCapriFb, arrsize(pathIntelCapriFb), {}, {}, KernelPatcher::KextInfo::Unloaded };
-	KernelPatcher::KextInfo kextIntelHD5000  { "com.apple.driver.AppleIntelHD5000Graphics", pathIntelHD5000, arrsize(pathIntelHD5000), {}, {}, KernelPatcher::KextInfo::Unloaded };
-	KernelPatcher::KextInfo kextIntelAzulFb  { "com.apple.driver.AppleIntelFramebufferAzul", pathIntelAzulFb, arrsize(pathIntelAzulFb), {}, {}, KernelPatcher::KextInfo::Unloaded };
-	KernelPatcher::KextInfo kextIntelBDW     { "com.apple.driver.AppleIntelBDWGraphics", pathIntelBDW, arrsize(pathIntelBDW), {}, {}, KernelPatcher::KextInfo::Unloaded };
-	KernelPatcher::KextInfo kextIntelBDWFb   { "com.apple.driver.AppleIntelBDWGraphicsFramebuffer", pathIntelBDWFb, arrsize(pathIntelBDWFb), {}, {}, KernelPatcher::KextInfo::Unloaded };
-	KernelPatcher::KextInfo kextIntelSKL     { "com.apple.driver.AppleIntelSKLGraphics", pathIntelSKL, arrsize(pathIntelSKL), {}, {}, KernelPatcher::KextInfo::Unloaded };
-	KernelPatcher::KextInfo kextIntelSKLFb   { "com.apple.driver.AppleIntelSKLGraphicsFramebuffer", pathIntelSKLFb, arrsize(pathIntelSKLFb), {}, {}, KernelPatcher::KextInfo::Unloaded };
-	KernelPatcher::KextInfo kextIntelKBL     { "com.apple.driver.AppleIntelKBLGraphics", pathIntelKBL, arrsize(pathIntelKBL), {}, {}, KernelPatcher::KextInfo::Unloaded };
-	KernelPatcher::KextInfo kextIntelKBLFb   { "com.apple.driver.AppleIntelKBLGraphicsFramebuffer", pathIntelKBLFb, arrsize(pathIntelKBLFb), {}, {}, KernelPatcher::KextInfo::Unloaded };
-	KernelPatcher::KextInfo kextIntelCFLFb   { "com.apple.driver.AppleIntelCFLGraphicsFramebuffer", pathIntelCFLFb, arrsize(pathIntelCFLFb), {}, {}, KernelPatcher::KextInfo::Unloaded };
-	KernelPatcher::KextInfo kextIntelCNL     { "com.apple.driver.AppleIntelCNLGraphics", pathIntelCNL, arrsize(pathIntelCNL), {}, {}, KernelPatcher::KextInfo::Unloaded };
-	KernelPatcher::KextInfo kextIntelCNLFb   { "com.apple.driver.AppleIntelCNLGraphicsFramebuffer", pathIntelCNLFb, arrsize(pathIntelCNLFb), {}, {}, KernelPatcher::KextInfo::Unloaded };
-	KernelPatcher::KextInfo kextIntelICL     { "com.apple.driver.AppleIntelICLGraphics", pathIntelICL, arrsize(pathIntelICL), {}, {}, KernelPatcher::KextInfo::Unloaded };
-	KernelPatcher::KextInfo kextIntelICLLPFb { "com.apple.driver.AppleIntelICLLPGraphicsFramebuffer", pathIntelICLLPFb, arrsize(pathIntelICLLPFb), {}, {}, KernelPatcher::KextInfo::Unloaded };
-	KernelPatcher::KextInfo kextIntelICLHPFb { "com.apple.driver.AppleIntelICLHPGraphicsFramebuffer", pathIntelICLHPFb, arrsize(pathIntelICLHPFb), {}, {}, KernelPatcher::KextInfo::Unloaded };
-} allKexts;
+static KernelPatcher::KextInfo allKexts[] = {
+	{ "com.apple.driver.AppleIntelHD3000Graphics", pathIntelHD3000, arrsize(pathIntelHD3000), {}, {}, KernelPatcher::KextInfo::Unloaded },
+	{ "com.apple.driver.AppleIntelSNBGraphicsFB", pathIntelSNBFb, arrsize(pathIntelSNBFb), {}, {}, KernelPatcher::KextInfo::Unloaded },
+	{ "com.apple.driver.AppleIntelHD4000Graphics", pathIntelHD4000, arrsize(pathIntelHD4000), {}, {}, KernelPatcher::KextInfo::Unloaded },
+	{ "com.apple.driver.AppleIntelFramebufferCapri", pathIntelCapriFb, arrsize(pathIntelCapriFb), {}, {}, KernelPatcher::KextInfo::Unloaded },
+	{ "com.apple.driver.AppleIntelHD5000Graphics", pathIntelHD5000, arrsize(pathIntelHD5000), {}, {}, KernelPatcher::KextInfo::Unloaded },
+	{ "com.apple.driver.AppleIntelFramebufferAzul", pathIntelAzulFb, arrsize(pathIntelAzulFb), {}, {}, KernelPatcher::KextInfo::Unloaded },
+	{ "com.apple.driver.AppleIntelBDWGraphics", pathIntelBDW, arrsize(pathIntelBDW), {}, {}, KernelPatcher::KextInfo::Unloaded },
+	{ "com.apple.driver.AppleIntelBDWGraphicsFramebuffer", pathIntelBDWFb, arrsize(pathIntelBDWFb), {}, {}, KernelPatcher::KextInfo::Unloaded },
+	{ "com.apple.driver.AppleIntelSKLGraphics", pathIntelSKL, arrsize(pathIntelSKL), {}, {}, KernelPatcher::KextInfo::Unloaded },
+	{ "com.apple.driver.AppleIntelSKLGraphicsFramebuffer", pathIntelSKLFb, arrsize(pathIntelSKLFb), {}, {}, KernelPatcher::KextInfo::Unloaded },
+	{ "com.apple.driver.AppleIntelKBLGraphics", pathIntelKBL, arrsize(pathIntelKBL), {}, {}, KernelPatcher::KextInfo::Unloaded },
+	{ "com.apple.driver.AppleIntelKBLGraphicsFramebuffer", pathIntelKBLFb, arrsize(pathIntelKBLFb), {}, {}, KernelPatcher::KextInfo::Unloaded },
+	{ "com.apple.driver.AppleIntelCFLGraphicsFramebuffer", pathIntelCFLFb, arrsize(pathIntelCFLFb), {}, {}, KernelPatcher::KextInfo::Unloaded },
+	{ "com.apple.driver.AppleIntelCNLGraphics", pathIntelCNL, arrsize(pathIntelCNL), {}, {}, KernelPatcher::KextInfo::Unloaded },
+	{ "com.apple.driver.AppleIntelCNLGraphicsFramebuffer", pathIntelCNLFb, arrsize(pathIntelCNLFb), {}, {}, KernelPatcher::KextInfo::Unloaded },
+	{ "com.apple.driver.AppleIntelICLGraphics", pathIntelICL, arrsize(pathIntelICL), {}, {}, KernelPatcher::KextInfo::Unloaded },
+	{ "com.apple.driver.AppleIntelICLLPGraphicsFramebuffer", pathIntelICLLPFb, arrsize(pathIntelICLLPFb), {}, {}, KernelPatcher::KextInfo::Unloaded },
+	{ "com.apple.driver.AppleIntelICLHPGraphicsFramebuffer", pathIntelICLHPFb, arrsize(pathIntelICLHPFb), {}, {}, KernelPatcher::KextInfo::Unloaded },
+};
+
+#define indexIntelHD3000	0
+#define indexIntelSNBFb		1
+#define indexIntelHD4000	2
+#define indexIntelCapriFb	3
+#define indexIntelHD5000	4
+#define indexIntelAzulFb	5
+#define indexIntelBDW		6
+#define indexIntelBDWFb		7
+#define indexIntelSKL		8
+#define indexIntelSKLFb		9
+#define indexIntelKBL		10
+#define indexIntelKBLFb		11
+#define indexIntelCFLFb		12
+#define indexIntelCNL		13
+#define indexIntelCNLFb		14
+#define indexIntelICL		15
+#define indexIntelICLLPFb	16
+#define indexIntelICLHPFb	17
+
+static KernelPatcher::KextInfo* allFBKexts[] = {
+	&allKexts[indexIntelSNBFb], &allKexts[indexIntelCapriFb], &allKexts[indexIntelAzulFb], &allKexts[indexIntelBDWFb], &allKexts[indexIntelSKLFb], &allKexts[indexIntelKBLFb], &allKexts[indexIntelCFLFb], &allKexts[indexIntelCNLFb], &allKexts[indexIntelICLLPFb], &allKexts[indexIntelICLHPFb],
+};
+static KernelPatcher::KextInfo* allGFXKexts[] = {
+	&allKexts[indexIntelHD3000], &allKexts[indexIntelHD4000], &allKexts[indexIntelHD5000], &allKexts[indexIntelBDW], &allKexts[indexIntelSKL], &allKexts[indexIntelKBL], &allKexts[indexIntelCNL], &allKexts[indexIntelICL],
+};
+
+static void switchOffKextList(KernelPatcher::KextInfo* kextInfoList[], size_t count, KernelPatcher::KextInfo* except = nullptr) {
+	for (size_t i = 0; i < count; i++) {
+		if (kextInfoList[i] != except)
+			kextInfoList[i]->switchOff();
+	}
+}
+
+static KernelPatcher::KextInfo* loadedKextFromIndex(KernelPatcher::KextInfo* kextInfoList[], size_t count, size_t index) {
+	for (size_t i = 0; i < count; i++) {
+		if (kextInfoList[i]->loadIndex == index)
+			return kextInfoList[i];
+	}
+	return nullptr;
+}
 
 IGFX *IGFX::callbackIGFX;
 
@@ -65,77 +105,20 @@ void IGFX::init() {
 
 	uint32_t family = 0, model = 0;
 	cpuGeneration = CPUInfo::getGeneration(&family, &model);
-	switch (cpuGeneration) {
-		case CPUInfo::CpuGeneration::Penryn:
-		case CPUInfo::CpuGeneration::Nehalem:
-		case CPUInfo::CpuGeneration::Westmere:
-			// Do not warn about legacy processors (e.g. Xeon).
-			break;
-		case CPUInfo::CpuGeneration::SandyBridge: {
-			int tmp = 1;
-			PE_parse_boot_argn("igfxsnb", &tmp, sizeof(tmp));
-			moderniseAccelerator = tmp == 1;
-			currentGraphics = &allKexts.kextIntelHD3000;
-			currentFramebuffer = &allKexts.kextIntelSNBFb;
-			break;
-		}
-		case CPUInfo::CpuGeneration::IvyBridge:
-			currentGraphics = &allKexts.kextIntelHD4000;
-			currentFramebuffer = &allKexts.kextIntelCapriFb;
-			break;
-		case CPUInfo::CpuGeneration::Haswell:
-			currentGraphics = &allKexts.kextIntelHD5000;
-			currentFramebuffer = &allKexts.kextIntelAzulFb;
-			break;
-		case CPUInfo::CpuGeneration::Broadwell:
-			currentGraphics = &allKexts.kextIntelBDW;
-			currentFramebuffer = &allKexts.kextIntelBDWFb;
-			break;
-		case CPUInfo::CpuGeneration::Skylake:
-			avoidFirmwareLoading = getKernelVersion() >= KernelVersion::HighSierra;
-			loadGuCFirmware = canLoadGuC > 0;
-			currentGraphics = &allKexts.kextIntelSKL;
-			currentFramebuffer = &allKexts.kextIntelSKLFb;
-			break;
-		case CPUInfo::CpuGeneration::KabyLake:	// CPU detect is not reliable here
-		case CPUInfo::CpuGeneration::CoffeeLake:
-			avoidFirmwareLoading = getKernelVersion() >= KernelVersion::HighSierra;
-			loadGuCFirmware = canLoadGuC > 0;
-			currentGraphics = &allKexts.kextIntelKBL;
-			// watch all KBL/CFL/SKL (SKL is always spoof scenario)
-			currentFramebuffer = &allKexts.kextIntelKBLFb;
-			currentFramebufferOpt1 = &allKexts.kextIntelCFLFb;
-			currentFramebufferOpt1 = &allKexts.kextIntelSKLFb;
-			// Note, several CFL GPUs are completely broken. They freeze in IGMemoryManager::initCache due to incompatible
-			// configuration, supposedly due to Apple not supporting new MOCS table and forcing Skylake-based format.
-			// See: https://github.com/torvalds/linux/blob/135c5504a600ff9b06e321694fbcac78a9530cd4/drivers/gpu/drm/i915/intel_mocs.c#L181
-			break;
-		case CPUInfo::CpuGeneration::CannonLake:
-			avoidFirmwareLoading = getKernelVersion() >= KernelVersion::HighSierra;
-			loadGuCFirmware = canLoadGuC > 0;
-			currentGraphics = &allKexts.kextIntelCNL;
-			currentFramebuffer = &allKexts.kextIntelCNLFb;
-			break;
-		case CPUInfo::CpuGeneration::IceLake:
-			avoidFirmwareLoading = getKernelVersion() >= KernelVersion::HighSierra;
-			loadGuCFirmware = canLoadGuC > 0;
-			currentGraphics = &allKexts.kextIntelICL;
-			currentFramebuffer = &allKexts.kextIntelICLLPFb;
-			currentFramebufferOpt1 = &allKexts.kextIntelICLHPFb;
-			break;
-		default:
-			SYSLOG("igfx", "found an unsupported processor 0x%X:0x%X, please report this!", family, model);
-			break;
+
+	if (cpuGeneration == CPUInfo::CpuGeneration::SandyBridge) {
+		int tmp = 1;
+		PE_parse_boot_argn("igfxsnb", &tmp, sizeof(tmp));
+		moderniseAccelerator = tmp == 1;
 	}
 
-	if (currentGraphics)
-		lilu.onKextLoadForce(currentGraphics);
-	if (currentFramebuffer)
-		lilu.onKextLoadForce(currentFramebuffer);
-	if (currentFramebufferOpt1)
-		lilu.onKextLoadForce(currentFramebufferOpt1);
-	if (currentFramebufferOpt2)
-		lilu.onKextLoadForce(currentFramebufferOpt2);
+	if (cpuGeneration >= CPUInfo::CpuGeneration::Skylake) {
+		avoidFirmwareLoading = getKernelVersion() >= KernelVersion::HighSierra;
+		loadGuCFirmware = canLoadGuC > 0;
+	}
+
+	// prepare to patch all framebuffer and graphics kexts
+	lilu.onKextLoadForce(allKexts, arrsize(allKexts));
 }
 
 void IGFX::deinit() {
@@ -188,16 +171,10 @@ void IGFX::processKernel(KernelPatcher &patcher, DeviceInfo *info) {
 		switchOffGraphics = switchOffFramebuffer = true;
 	}
 
-	if (switchOffGraphics && currentGraphics)
-		currentGraphics->switchOff();
-	if (switchOffFramebuffer) {
-		if (currentFramebuffer)
-			currentFramebuffer->switchOff();
-		if (currentFramebufferOpt1)
-			currentFramebufferOpt1->switchOff();
-		if (currentFramebufferOpt2)
-			currentFramebufferOpt2->switchOff();
-	}
+	if (switchOffGraphics)
+		switchOffKextList(allGFXKexts, arrsize(allGFXKexts));
+	if (switchOffFramebuffer)
+		switchOffKextList(allFBKexts, arrsize(allFBKexts));
 
 	if (moderniseAccelerator) {
 		KernelPatcher::RouteRequest request("__ZN9IOService20copyExistingServicesEP12OSDictionaryjj", wrapCopyExistingServices, orgCopyExistingServices);
@@ -206,12 +183,19 @@ void IGFX::processKernel(KernelPatcher &patcher, DeviceInfo *info) {
 }
 
 bool IGFX::processKext(KernelPatcher &patcher, size_t index, mach_vm_address_t address, size_t size) {
-	if (currentGraphics && currentGraphics->loadIndex == index) {
+	// determine if one of the graphics accelerator kexts is loaded
+	auto kextInfo = loadedKextFromIndex(allGFXKexts, arrsize(allGFXKexts), index);
+	if (kextInfo) {
+		currentGraphics = kextInfo;
+		DBGLOG("igfx", "currentGraphics loaded %lu, %s", index, currentGraphics->id);
+		// cancel other graphics kexts
+		switchOffKextList(allGFXKexts, arrsize(allGFXKexts), currentGraphics);
+
 		if (pavpDisablePatch) {
 			auto callbackSym = "__ZN16IntelAccelerator19PAVPCommandCallbackE22PAVPSessionCommandID_tjPjb";
-			if (&allKexts.kextIntelHD3000 == currentGraphics)
+			if (&allKexts[indexIntelHD3000] == currentGraphics)
 				callbackSym = "__ZN15Gen6Accelerator19PAVPCommandCallbackE22PAVPSessionCommandID_t18PAVPSessionAppID_tPjb";
-			else if (&allKexts.kextIntelHD4000 == currentGraphics)
+			else if (&allKexts[indexIntelHD4000] == currentGraphics)
 				callbackSym = "__ZN16IntelAccelerator19PAVPCommandCallbackE22PAVPSessionCommandID_t18PAVPSessionAppID_tPjb";
 
 			KernelPatcher::RouteRequest request(callbackSym, wrapPavpSessionCallback, orgPavpSessionCallback);
@@ -220,7 +204,7 @@ bool IGFX::processKext(KernelPatcher &patcher, size_t index, mach_vm_address_t a
 
 		if (forceOpenGL || moderniseAccelerator || avoidFirmwareLoading) {
 			auto startSym = "__ZN16IntelAccelerator5startEP9IOService";
-			if (&allKexts.kextIntelHD3000 == currentGraphics)
+			if (&allKexts[indexIntelHD3000] == currentGraphics)
 				startSym = "__ZN16IntelAccelerator5startEP9IOService";
 
 			KernelPatcher::RouteRequest request(startSym, wrapAcceleratorStart, orgAcceleratorStart);
@@ -233,36 +217,19 @@ bool IGFX::processKext(KernelPatcher &patcher, size_t index, mach_vm_address_t a
 		return true;
 	}
 
-	if (currentFramebufferOpt1 && currentFramebufferOpt1->loadIndex == index) {
-		// this is a spoofing scenario:
-		// upon matching currentFramebufferOpt1, adopt it instead of currentFramebuffer
-		if (currentFramebuffer)
-			currentFramebuffer->switchOff();
-		if (currentFramebufferOpt2)
-			currentFramebufferOpt2->switchOff();
-		currentFramebuffer = currentFramebufferOpt1;
-		currentFramebufferOpt1 = nullptr;
-		currentFramebufferOpt2 = nullptr;
-	}
+	// determine if one of the framebuffer kexts is loaded
+	kextInfo = loadedKextFromIndex(allFBKexts, arrsize(allFBKexts), index);
+	if (kextInfo) {
+		currentFramebuffer = kextInfo;
+		DBGLOG("igfx", "currentFramebuffer loaded %lu, %s", index, currentFramebuffer->id);
+		// cancel other framebuffer kexts
+		switchOffKextList(allFBKexts, arrsize(allFBKexts), currentFramebuffer);
 
-	if (currentFramebufferOpt2 && currentFramebufferOpt1->loadIndex == index) {
-		// this is a spoofing scenario:
-		// upon matching currentFramebufferOpt2, adopt it instead of currentFramebuffer
-		if (currentFramebuffer)
-			currentFramebuffer->switchOff();
-		if (currentFramebufferOpt1)
-			currentFramebufferOpt1->switchOff();
-		currentFramebuffer = currentFramebufferOpt2;
-		currentFramebufferOpt1 = nullptr;
-		currentFramebufferOpt2 = nullptr;
-	}
-
-	if (currentFramebuffer && currentFramebuffer->loadIndex == index) {
 		if (blackScreenPatch) {
 			bool foundSymbol = false;
 
 			// Currently it is 10.14.1 and Kaby+...
-			if (getKernelVersion() >= KernelVersion::Mojave && currentFramebuffer >= &allKexts.kextIntelKBLFb) {
+			if (getKernelVersion() >= KernelVersion::Mojave && currentFramebuffer >= &allKexts[indexIntelKBLFb]) {
 				KernelPatcher::RouteRequest request("__ZN31AppleIntelFramebufferController16ComputeLaneCountEPK29IODetailedTimingInformationV2jPj", wrapComputeLaneCountNouveau, orgComputeLaneCount);
 				foundSymbol = patcher.routeMultiple(index, &request, 1, address, size);
 			}
@@ -274,19 +241,20 @@ bool IGFX::processKext(KernelPatcher &patcher, size_t index, mach_vm_address_t a
 		}
 
 		if (applyFramebufferPatch || dumpFramebufferToDisk || dumpPlatformTable || hdmiAutopatch) {
-			gPlatformInformationList = patcher.solveSymbol<void *>(index, &allKexts.kextIntelSNBFb == currentFramebuffer ? "_PlatformInformationList" : "_gPlatformInformationList", address, size);
+			auto lookup = &allKexts[indexIntelSNBFb] == currentFramebuffer ? "_PlatformInformationList" : "_gPlatformInformationList";
+			gPlatformInformationList = patcher.solveSymbol<void *>(index, lookup, address, size);
 			if (gPlatformInformationList) {
 				framebufferStart = reinterpret_cast<uint8_t *>(address);
 				framebufferSize = size;
 
 				auto fbGetOSInformation = "__ZN31AppleIntelFramebufferController16getOSInformationEv";
-				if (&allKexts.kextIntelSNBFb == currentFramebuffer)
+				if (&allKexts[indexIntelSNBFb] == currentFramebuffer)
 					fbGetOSInformation = "__ZN23AppleIntelSNBGraphicsFB16getOSInformationEv";
-				else if (&allKexts.kextIntelCapriFb == currentFramebuffer)
+				else if (&allKexts[indexIntelCapriFb] == currentFramebuffer)
 					fbGetOSInformation = "__ZN25AppleIntelCapriController16getOSInformationEv";
-				else if (&allKexts.kextIntelAzulFb == currentFramebuffer)
+				else if (&allKexts[indexIntelAzulFb] == currentFramebuffer)
 					fbGetOSInformation = "__ZN24AppleIntelAzulController16getOSInformationEv";
-				else if (&allKexts.kextIntelBDWFb == currentFramebuffer)
+				else if (&allKexts[indexIntelBDWFb] == currentFramebuffer)
 					fbGetOSInformation = "__ZN22AppleIntelFBController16getOSInformationEv";
 
 				KernelPatcher::RouteRequest request(fbGetOSInformation, wrapGetOSInformation, orgGetOSInformation);
@@ -314,7 +282,7 @@ IOReturn IGFX::wrapPavpSessionCallback(void *intelAccelerator, int32_t sessionCo
 }
 
 bool IGFX::wrapComputeLaneCount(void *that, void *timing, uint32_t bpp, int32_t availableLanes, int32_t *laneCount) {
-	DBGLOG("igfx", "computeLaneCount: bpp = %u, available = %d", bpp, availableLanes);
+	//DBGLOG("igfx", "computeLaneCount: bpp = %u, available = %d", bpp, availableLanes);
 
 	// It seems that AGDP fails to properly detect external boot monitors. As a result computeLaneCount
 	// is mistakengly called for any boot monitor (e.g. HDMI/DVI), while it is only meant to be used for
@@ -519,7 +487,7 @@ void *IGFX::wrapIgBufferWithOptions(void *accelTask, unsigned long size, unsigne
 		size_t fwsize = 0;
 		size_t fwsigsize = 0;
 
-		if (&allKexts.kextIntelSKLFb == callbackIGFX->currentFramebuffer) {
+		if (&allKexts[indexIntelSKLFb] == callbackIGFX->currentFramebuffer) {
 			fw = GuCFirmwareSKL;
 			fwsig = GuCFirmwareSKLSignature;
 			fwsize = GuCFirmwareSKLSize;
@@ -749,6 +717,9 @@ bool IGFX::loadPatchesFromDevice(IORegistryEntry *igpu, uint32_t currentFramebuf
 }
 
 uint8_t *IGFX::findFramebufferId(uint32_t framebufferId, uint8_t *startingAddress, size_t maxSize) {
+	if (!startingAddress)
+		return nullptr;
+
 	uint32_t *startAddress = reinterpret_cast<uint32_t *>(startingAddress);
 	uint32_t *endAddress = reinterpret_cast<uint32_t *>(startingAddress + maxSize);
 	while (startAddress < endAddress) {
@@ -762,14 +733,17 @@ uint8_t *IGFX::findFramebufferId(uint32_t framebufferId, uint8_t *startingAddres
 
 #ifdef DEBUG
 size_t IGFX::calculatePlatformListSize(size_t maxSize) {
+	if (!gPlatformInformationList)
+		return 0;
 	// sanity check maxSize
 	if (maxSize < sizeof(uint32_t)*2)
 		return maxSize;
+
 	// ig-platform-id table ends with 0xFFFFF, but to avoid false positive
 	// look for FFFFFFFF 00000000
 	// and Sandy Bridge is special, ending in 00000000 000c0c0c
 	uint32_t match0, match1;
-	if (&allKexts.kextIntelSNBFb == currentFramebuffer) {
+	if (&allKexts[indexIntelSNBFb] == currentFramebuffer) {
 		match0 = 0;
 		match1 = 0x0c0c0c00;
 	} else {
@@ -789,6 +763,10 @@ size_t IGFX::calculatePlatformListSize(size_t maxSize) {
 }
 
 void IGFX::writePlatformListData(const char *subKeyName) {
+	if (!gPlatformInformationList) {
+		DBGLOG("igfx", "writePlatformListData: gPlatformInformationList is null");
+		return;
+	}
 	auto entry = IORegistryEntry::fromPath("IOService:/IOResources/WhateverGreen");
 	if (entry) {
 		entry->setProperty(subKeyName, gPlatformInformationList, static_cast<unsigned>(calculatePlatformListSize(PAGE_SIZE)));
@@ -834,6 +812,9 @@ bool IGFX::applyPatch(const KernelPatcher::LookupPatch &patch, uint8_t *starting
 
 template <>
 bool IGFX::applyPlatformInformationListPatch(uint32_t framebufferId, FramebufferSNB *platformInformationList) {
+	if (!platformInformationList)
+		return false;
+
 	uint32_t framebufferPlatformId[] = { 0x00010000, 0x00020000, 0x00030010, 0x00030030, 0x00040000, 0xFFFFFFFF, 0xFFFFFFFF, 0x00030020, 0x00050000 };
 	size_t platformInformationCount = arrsize(framebufferPlatformId);
 	bool framebufferFound = false;
@@ -993,23 +974,23 @@ void IGFX::applyFramebufferPatches() {
 	// Not tested prior to 10.10.5, and definitely different on 10.9.5 at least.
 	if (getKernelVersion() >= KernelVersion::Yosemite) {
 		bool success = false;
-		if (&allKexts.kextIntelSNBFb == currentFramebuffer)
+		if (&allKexts[indexIntelSNBFb] == currentFramebuffer)
 			success = applyPlatformInformationListPatch(framebufferId, static_cast<FramebufferSNB *>(gPlatformInformationList));
-		else if (&allKexts.kextIntelCapriFb == currentFramebuffer)
+		else if (&allKexts[indexIntelCapriFb] == currentFramebuffer)
 			success = applyPlatformInformationListPatch(framebufferId, static_cast<FramebufferIVB *>(gPlatformInformationList));
-		else if (&allKexts.kextIntelAzulFb == currentFramebuffer)
+		else if (&allKexts[indexIntelAzulFb] == currentFramebuffer)
 			success = applyPlatformInformationListPatch(framebufferId, static_cast<FramebufferHSW *>(gPlatformInformationList));
-		else if (&allKexts.kextIntelBDWFb == currentFramebuffer)
+		else if (&allKexts[indexIntelBDWFb] == currentFramebuffer)
 			success = applyPlatformInformationListPatch(framebufferId, static_cast<FramebufferBDW *>(gPlatformInformationList));
-		else if (&allKexts.kextIntelSKLFb == currentFramebuffer || &allKexts.kextIntelKBLFb == currentFramebuffer)
+		else if (&allKexts[indexIntelSKLFb] == currentFramebuffer || &allKexts[indexIntelKBLFb] == currentFramebuffer)
 			success = applyPlatformInformationListPatch(framebufferId, static_cast<FramebufferSKL *>(gPlatformInformationList));
-		else if (&allKexts.kextIntelCFLFb == currentFramebuffer)
+		else if (&allKexts[indexIntelCFLFb] == currentFramebuffer)
 			success = applyPlatformInformationListPatch(framebufferId, static_cast<FramebufferCFL *>(gPlatformInformationList));
-		else if (&allKexts.kextIntelCNLFb == currentFramebuffer)
+		else if (&allKexts[indexIntelCNLFb] == currentFramebuffer)
 			success = applyPlatformInformationListPatch(framebufferId, static_cast<FramebufferCNL *>(gPlatformInformationList));
-		else if (&allKexts.kextIntelICLLPFb == currentFramebuffer)
+		else if (&allKexts[indexIntelICLLPFb] == currentFramebuffer)
 			success = applyPlatformInformationListPatch(framebufferId, static_cast<FramebufferICLLP *>(gPlatformInformationList));
-		else if (&allKexts.kextIntelICLHPFb == currentFramebuffer)
+		else if (&allKexts[indexIntelICLHPFb] == currentFramebuffer)
 			success = applyPlatformInformationListPatch(framebufferId, static_cast<FramebufferICLHP *>(gPlatformInformationList));
 
 		if (success)
@@ -1063,23 +1044,23 @@ void IGFX::applyHdmiAutopatch() {
 	uint32_t framebufferId = framebufferPatch.framebufferId;
 
 	bool success = false;
-	if (&allKexts.kextIntelSNBFb == currentFramebuffer)
+	if (&allKexts[indexIntelSNBFb] == currentFramebuffer)
 		success = applyDPtoHDMIPatch(framebufferId, static_cast<FramebufferSNB *>(gPlatformInformationList));
-	else if (&allKexts.kextIntelCapriFb == currentFramebuffer)
+	else if (&allKexts[indexIntelCapriFb] == currentFramebuffer)
 		success = applyDPtoHDMIPatch(framebufferId, static_cast<FramebufferIVB *>(gPlatformInformationList));
-	else if (&allKexts.kextIntelAzulFb == currentFramebuffer)
+	else if (&allKexts[indexIntelAzulFb] == currentFramebuffer)
 		success = applyDPtoHDMIPatch(framebufferId, static_cast<FramebufferHSW *>(gPlatformInformationList));
-	else if (&allKexts.kextIntelBDWFb == currentFramebuffer)
+	else if (&allKexts[indexIntelBDWFb] == currentFramebuffer)
 		success = applyDPtoHDMIPatch(framebufferId, static_cast<FramebufferBDW *>(gPlatformInformationList));
-	else if (&allKexts.kextIntelSKLFb == currentFramebuffer)
+	else if (&allKexts[indexIntelSKLFb] == currentFramebuffer)
 		success = applyDPtoHDMIPatch(framebufferId, static_cast<FramebufferSKL *>(gPlatformInformationList));
-	else if (&allKexts.kextIntelCFLFb == currentFramebuffer)
+	else if (&allKexts[indexIntelCFLFb] == currentFramebuffer)
 		success = applyDPtoHDMIPatch(framebufferId, static_cast<FramebufferCFL *>(gPlatformInformationList));
-	else if (&allKexts.kextIntelCNLFb == currentFramebuffer)
+	else if (&allKexts[indexIntelCNLFb] == currentFramebuffer)
 		success = applyDPtoHDMIPatch(framebufferId, static_cast<FramebufferCNL *>(gPlatformInformationList));
-	else if (&allKexts.kextIntelICLLPFb == currentFramebuffer)
+	else if (&allKexts[indexIntelICLLPFb] == currentFramebuffer)
 		success = applyDPtoHDMIPatch(framebufferId, static_cast<FramebufferICLLP *>(gPlatformInformationList));
-	else if (&allKexts.kextIntelICLHPFb == currentFramebuffer)
+	else if (&allKexts[indexIntelICLHPFb] == currentFramebuffer)
 		success = applyDPtoHDMIPatch(framebufferId, static_cast<FramebufferICLHP *>(gPlatformInformationList));
 
 	if (success)

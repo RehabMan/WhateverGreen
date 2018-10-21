@@ -149,16 +149,6 @@ private:
 	KernelPatcher::KextInfo *currentFramebuffer {nullptr};
 
 	/**
-	 *  Current framebuffer optional kext #1 used for modification
-	 */
-	KernelPatcher::KextInfo *currentFramebufferOpt1 {nullptr};
-
-	/**
-	 *  Current framebuffer optional kext #2 used for modification
-	 */
-	KernelPatcher::KextInfo *currentFramebufferOpt2 {nullptr};
-
-	/**
 	 *  Original PAVP session callback function used for PAVP command handling
 	 */
 	mach_vm_address_t orgPavpSessionCallback {};
@@ -394,12 +384,12 @@ private:
 	/**
 	 *  Load user-specified arguments from IGPU device
 	 *
-	 *  @param igpu                IGPU device handle
-	 *  @param currentFramebuffer  current framebuffer id number
+	 *  @param igpu                	IGPU device handle
+	 *  @param currentFramebufferId current framebuffer id number
 	 *
 	 *  @return true if there is anything to do
 	 */
-	bool loadPatchesFromDevice(IORegistryEntry *igpu, uint32_t currentFramebuffer);
+	bool loadPatchesFromDevice(IORegistryEntry *igpu, uint32_t currentFramebufferId);
 
 	/**
 	 *  Find the framebuffer id in data
