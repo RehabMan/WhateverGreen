@@ -134,11 +134,6 @@ private:
 	void *gPlatformInformationList {nullptr};
 
 	/**
-	 *  Framebuffer list is in Sandy Bridge format
-	 */
-	bool gPlatformListIsSNB {false};
-
-	/**
 	 *  Private self instance for callbacks
 	 */
 	static IGFX *callbackIGFX;
@@ -154,9 +149,14 @@ private:
 	KernelPatcher::KextInfo *currentFramebuffer {nullptr};
 
 	/**
-	 *  Current framebuffer optional kext used for modification
+	 *  Current framebuffer optional kext #1 used for modification
 	 */
-	KernelPatcher::KextInfo *currentFramebufferOpt {nullptr};
+	KernelPatcher::KextInfo *currentFramebufferOpt1 {nullptr};
+
+	/**
+	 *  Current framebuffer optional kext #2 used for modification
+	 */
+	KernelPatcher::KextInfo *currentFramebufferOpt2 {nullptr};
 
 	/**
 	 *  Original PAVP session callback function used for PAVP command handling
