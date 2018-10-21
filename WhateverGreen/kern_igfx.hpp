@@ -144,6 +144,11 @@ private:
 	KernelPatcher::KextInfo *currentGraphics {nullptr};
 
 	/**
+	 *  Current graphics optional kext used for modification
+	 */
+	KernelPatcher::KextInfo *currentGraphicsOpt {nullptr};
+
+	/**
 	 *  Current framebuffer kext used for modification
 	 */
 	KernelPatcher::KextInfo *currentFramebuffer {nullptr};

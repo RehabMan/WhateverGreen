@@ -101,11 +101,12 @@ void IGFX::init() {
 		case CPUInfo::CpuGeneration::CoffeeLake:
 			avoidFirmwareLoading = getKernelVersion() >= KernelVersion::HighSierra;
 			loadGuCFirmware = canLoadGuC > 0;
-			currentGraphics = &allKexts.kextIntelKBL;
 			// watch all KBL/CFL/SKL (SKL is always spoof scenario)
+			currentGraphics = &allKexts.kextIntelKBL;
+			currentGraphicsOpt = &allKexts.kextIntelSKL;
 			currentFramebuffer = &allKexts.kextIntelKBLFb;
 			currentFramebufferOpt1 = &allKexts.kextIntelCFLFb;
-			currentFramebufferOpt1 = &allKexts.kextIntelSKLFb;
+			currentFramebufferOpt2 = &allKexts.kextIntelSKLFb;
 			// Note, several CFL GPUs are completely broken. They freeze in IGMemoryManager::initCache due to incompatible
 			// configuration, supposedly due to Apple not supporting new MOCS table and forcing Skylake-based format.
 			// See: https://github.com/torvalds/linux/blob/135c5504a600ff9b06e321694fbcac78a9530cd4/drivers/gpu/drm/i915/intel_mocs.c#L181
@@ -130,6 +131,8 @@ void IGFX::init() {
 
 	if (currentGraphics)
 		lilu.onKextLoadForce(currentGraphics);
+	if (currentGraphicsOpt)
+		lilu.onKextLoadForce(currentGraphicsOpt);
 	if (currentFramebuffer)
 		lilu.onKextLoadForce(currentFramebuffer);
 	if (currentFramebufferOpt1)
@@ -188,8 +191,12 @@ void IGFX::processKernel(KernelPatcher &patcher, DeviceInfo *info) {
 		switchOffGraphics = switchOffFramebuffer = true;
 	}
 
-	if (switchOffGraphics && currentGraphics)
-		currentGraphics->switchOff();
+	if (switchOffGraphics) {
+		if (currentGraphics)
+			currentGraphics->switchOff();
+		if (currentGraphicsOpt)
+			currentGraphicsOpt->switchOff();
+	}
 	if (switchOffFramebuffer) {
 		if (currentFramebuffer)
 			currentFramebuffer->switchOff();
@@ -206,6 +213,15 @@ void IGFX::processKernel(KernelPatcher &patcher, DeviceInfo *info) {
 }
 
 bool IGFX::processKext(KernelPatcher &patcher, size_t index, mach_vm_address_t address, size_t size) {
+	if (currentGraphicsOpt && currentGraphicsOpt->loadIndex == index) {
+		// this is a spoofing scenario:
+		// upon matching currentGraphicsOpt, adopt it instead of currentGraphics
+		if (currentGraphics)
+			currentGraphics->switchOff();
+		currentGraphics = currentGraphicsOpt;
+		currentGraphicsOpt = nullptr;
+	}
+
 	if (currentGraphics && currentGraphics->loadIndex == index) {
 		if (pavpDisablePatch) {
 			auto callbackSym = "__ZN16IntelAccelerator19PAVPCommandCallbackE22PAVPSessionCommandID_tjPjb";
