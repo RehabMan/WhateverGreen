@@ -102,11 +102,11 @@ void IGFX::init() {
 			avoidFirmwareLoading = getKernelVersion() >= KernelVersion::HighSierra;
 			loadGuCFirmware = canLoadGuC > 0;
 			// watch all KBL/CFL/SKL (SKL is always spoof scenario)
-			currentGraphics = &allKexts.kextIntelKBL;
-			currentGraphicsOpt = &allKexts.kextIntelSKL;
-			currentFramebuffer = &allKexts.kextIntelKBLFb;
-			currentFramebufferOpt1 = &allKexts.kextIntelCFLFb;
-			currentFramebufferOpt2 = &allKexts.kextIntelSKLFb;
+			currentGraphics = &allKexts.kextIntelSKL;
+			currentFramebuffer = &allKexts.kextIntelSKLFb;
+			currentGraphicsOpt = &allKexts.kextIntelKBL;
+			currentFramebufferOpt1 = &allKexts.kextIntelKBLFb;
+			currentFramebufferOpt2 = &allKexts.kextIntelCFLFb;
 			// Note, several CFL GPUs are completely broken. They freeze in IGMemoryManager::initCache due to incompatible
 			// configuration, supposedly due to Apple not supporting new MOCS table and forcing Skylake-based format.
 			// See: https://github.com/torvalds/linux/blob/135c5504a600ff9b06e321694fbcac78a9530cd4/drivers/gpu/drm/i915/intel_mocs.c#L181
@@ -128,7 +128,7 @@ void IGFX::init() {
 			SYSLOG("igfx", "found an unsupported processor 0x%X:0x%X, please report this!", family, model);
 			break;
 	}
-
+#if 1
 	if (currentGraphics)
 		lilu.onKextLoadForce(currentGraphics);
 	if (currentGraphicsOpt)
@@ -139,6 +139,20 @@ void IGFX::init() {
 		lilu.onKextLoadForce(currentFramebufferOpt1);
 	if (currentFramebufferOpt2)
 		lilu.onKextLoadForce(currentFramebufferOpt2);
+#else
+	//REVIEW: superhack! DEPENDS ON ORDER in struct/correct order of variable assignments!
+	// just for bug hunting
+	KernelPatcher::KextInfo* lastFramebuffer = currentFramebuffer;
+	if (currentFramebufferOpt1)
+		lastFramebuffer = currentFramebufferOpt1;
+	if (currentFramebufferOpt2)
+		lastFramebuffer = currentFramebufferOpt2;
+	size_t numKexts = lastFramebuffer - currentGraphics + 1;
+	DBGLOG("igfx", "hooking %lu entries", numKexts);
+	for (size_t i = 0; i < numKexts; i++)
+		DBGLOG("igfx", "entry[%lu] = %s", i, currentGraphics[i].id);
+	lilu.onKextLoadForce(currentGraphics, numKexts);
+#endif
 }
 
 void IGFX::deinit() {
@@ -330,7 +344,7 @@ IOReturn IGFX::wrapPavpSessionCallback(void *intelAccelerator, int32_t sessionCo
 }
 
 bool IGFX::wrapComputeLaneCount(void *that, void *timing, uint32_t bpp, int32_t availableLanes, int32_t *laneCount) {
-	DBGLOG("igfx", "computeLaneCount: bpp = %u, available = %d", bpp, availableLanes);
+	//DBGLOG("igfx", "computeLaneCount: bpp = %u, available = %d", bpp, availableLanes);
 
 	// It seems that AGDP fails to properly detect external boot monitors. As a result computeLaneCount
 	// is mistakengly called for any boot monitor (e.g. HDMI/DVI), while it is only meant to be used for
