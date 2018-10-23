@@ -1,5 +1,10 @@
 WhateverGreen Changelog
 =======================
+#### v1.2.x (TBD)
+- Added igfxcpu for igfx specific CPU spoofing (separate from lilucpu)
+- Added spoof CoffeeLake or KabyLake as Skylake
+- Fixed crashes that may happen when _gPlatformInformationList cannot be resolved
+
 #### v1.2.4
 - Added platform list dumping to ioreg (at IOService:/IOResources/WhateverGreen), debug build only with -igfxfbdump
 - Fixed 10.14.1 IGPU KBL/CFL support without external GPU

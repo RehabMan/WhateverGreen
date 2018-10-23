@@ -299,6 +299,24 @@ private:
 	uint32_t realBinarySize {};
 
 	/**
+	 * 	Switch off all KextInfo in a list of KextInfo, optionally exclude the KextInfo specified by except
+	 *
+	 *	@param kextInfoList 	array of pointers to KextInfo to switch off
+	 *	@param exclude			optional pointer to KextInfo to not switch off
+	 */
+	static void switchOffKextList(KernelPatcher::KextInfo* kextInfoList[], KernelPatcher::KextInfo* except = nullptr);
+
+	/**
+	 *	Find a KextInfo with matching loadIndex in a list of KextInfo
+	 *
+	 *	@param kextInfoList		array of pointers to KextInfo to check for matching loadIndex
+	 *	@param index			KextInfo loadIndex for matching
+	 *
+	 *	@return KextInfo that matched, or nullptr if no match found
+	 */
+	static KernelPatcher::KextInfo* loadedKextFromIndex(KernelPatcher::KextInfo* kextInfoList[], size_t index);
+
+	/**
 	 *  PAVP session callback wrapper used to prevent freezes on incompatible PAVP certificates
 	 */
 	static IOReturn wrapPavpSessionCallback(void *intelAccelerator, int32_t sessionCommand, uint32_t sessionAppId, uint32_t *a4, bool flag);

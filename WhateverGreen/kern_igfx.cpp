@@ -53,48 +53,59 @@ static KernelPatcher::KextInfo allKexts[] = {
 	{ "com.apple.driver.AppleIntelICLHPGraphicsFramebuffer", pathIntelICLHPFb, arrsize(pathIntelICLHPFb), {}, {}, KernelPatcher::KextInfo::Unloaded },
 };
 
-#define indexIntelHD3000	0
-#define indexIntelSNBFb		1
-#define indexIntelHD4000	2
-#define indexIntelCapriFb	3
-#define indexIntelHD5000	4
-#define indexIntelAzulFb	5
-#define indexIntelBDW		6
-#define indexIntelBDWFb		7
-#define indexIntelSKL		8
-#define indexIntelSKLFb		9
-#define indexIntelKBL		10
-#define indexIntelKBLFb		11
-#define indexIntelCFLFb		12
-#define indexIntelCNL		13
-#define indexIntelCNLFb		14
-#define indexIntelICL		15
-#define indexIntelICLLPFb	16
-#define indexIntelICLHPFb	17
-
-static KernelPatcher::KextInfo* allFBKexts[] = {
-	&allKexts[indexIntelSNBFb], &allKexts[indexIntelCapriFb], &allKexts[indexIntelAzulFb], &allKexts[indexIntelBDWFb], &allKexts[indexIntelSKLFb], &allKexts[indexIntelKBLFb], &allKexts[indexIntelCFLFb], &allKexts[indexIntelCNLFb], &allKexts[indexIntelICLLPFb], &allKexts[indexIntelICLHPFb],
+// indexes into allKexts starting with zero
+enum allKextsIndexes {
+	indexIntelHD3000,
+	indexIntelSNBFb,
+	indexIntelHD4000,
+	indexIntelCapriFb,
+	indexIntelHD5000,
+	indexIntelAzulFb,
+	indexIntelBDW,
+	indexIntelBDWFb,
+	indexIntelSKL,
+	indexIntelSKLFb,
+	indexIntelKBL,
+	indexIntelKBLFb,
+	indexIntelCFLFb,
+	indexIntelCNL,
+	indexIntelCNLFb,
+	indexIntelICL,
+	indexIntelICLLPFb,
+	indexIntelICLHPFb,
+	indexIntelMax	// max is really maximum valid index+1
 };
+
+static_assert(indexIntelMax == arrsize(allKexts), "allKextsIndexes does not match allKexts");
+
+// list of graphics KextInfo, null terminated
 static KernelPatcher::KextInfo* allGFXKexts[] = {
 	&allKexts[indexIntelHD3000], &allKexts[indexIntelHD4000], &allKexts[indexIntelHD5000], &allKexts[indexIntelBDW], &allKexts[indexIntelSKL], &allKexts[indexIntelKBL], &allKexts[indexIntelCNL], &allKexts[indexIntelICL],
+	nullptr
 };
 
-static void switchOffKextList(KernelPatcher::KextInfo* kextInfoList[], size_t count, KernelPatcher::KextInfo* except = nullptr) {
-	for (size_t i = 0; i < count; i++) {
-		if (kextInfoList[i] != except)
-			kextInfoList[i]->switchOff();
+// list of framebuffer KextInfo, null terminated
+static KernelPatcher::KextInfo* allFBKexts[] = {
+	&allKexts[indexIntelSNBFb], &allKexts[indexIntelCapriFb], &allKexts[indexIntelAzulFb], &allKexts[indexIntelBDWFb], &allKexts[indexIntelSKLFb], &allKexts[indexIntelKBLFb], &allKexts[indexIntelCFLFb], &allKexts[indexIntelCNLFb], &allKexts[indexIntelICLLPFb], &allKexts[indexIntelICLHPFb],
+	nullptr
+};
+
+IGFX *IGFX::callbackIGFX;
+
+void IGFX::switchOffKextList(KernelPatcher::KextInfo* kextInfoList[], KernelPatcher::KextInfo* except) {
+	for (; *kextInfoList; kextInfoList++) {
+		if (*kextInfoList != except)
+			(*kextInfoList)->switchOff();
 	}
 }
 
-static KernelPatcher::KextInfo* loadedKextFromIndex(KernelPatcher::KextInfo* kextInfoList[], size_t count, size_t index) {
-	for (size_t i = 0; i < count; i++) {
-		if (kextInfoList[i]->loadIndex == index)
-			return kextInfoList[i];
+KernelPatcher::KextInfo* IGFX::loadedKextFromIndex(KernelPatcher::KextInfo* kextInfoList[], size_t index) {
+	for (; *kextInfoList; kextInfoList++) {
+		if ((*kextInfoList)->loadIndex == index)
+			return *kextInfoList;
 	}
 	return nullptr;
 }
-
-IGFX *IGFX::callbackIGFX;
 
 void IGFX::init() {
 	callbackIGFX = this;
@@ -105,6 +116,15 @@ void IGFX::init() {
 
 	uint32_t family = 0, model = 0;
 	cpuGeneration = CPUInfo::getGeneration(&family, &model);
+
+	uint32_t generation = 0;
+	if (PE_parse_boot_argn("igfxcpu", &generation, sizeof(generation))) {
+		DBGLOG("igfx", "found CPU generation override %u", generation);
+		if (generation < static_cast<uint32_t>(CPUInfo::CpuGeneration::MaxGeneration))
+			cpuGeneration = static_cast<CPUInfo::CpuGeneration>(generation);
+		else
+			SYSLOG("igfx", "found invalid CPU generation override %u, falling back to detected %u", generation, cpuGeneration);
+	}
 
 	if (cpuGeneration == CPUInfo::CpuGeneration::SandyBridge) {
 		int tmp = 1;
@@ -117,8 +137,58 @@ void IGFX::init() {
 		loadGuCFirmware = canLoadGuC > 0;
 	}
 
-	// prepare to patch all framebuffer and graphics kexts
-	lilu.onKextLoadForce(allKexts, arrsize(allKexts));
+	size_t kextFirstIndex, kextLastIndex;
+
+	switch (cpuGeneration) {
+		case CPUInfo::CpuGeneration::Penryn:
+		case CPUInfo::CpuGeneration::Nehalem:
+		case CPUInfo::CpuGeneration::Westmere:
+			// Do not warn about legacy processors (e.g. Xeon).
+			return;
+		case CPUInfo::CpuGeneration::SandyBridge:
+			kextFirstIndex = indexIntelHD3000;
+			kextLastIndex = indexIntelSNBFb;
+			break;
+		case CPUInfo::CpuGeneration::IvyBridge:
+			kextFirstIndex = indexIntelHD4000;
+			kextLastIndex = indexIntelCapriFb;
+			break;
+		case CPUInfo::CpuGeneration::Haswell:
+			kextFirstIndex = indexIntelHD5000;
+			kextLastIndex = indexIntelAzulFb;
+			break;
+		case CPUInfo::CpuGeneration::Broadwell:
+			kextFirstIndex = indexIntelBDW;
+			kextLastIndex = indexIntelBDWFb;
+			break;
+		case CPUInfo::CpuGeneration::Skylake:
+			kextFirstIndex = indexIntelSKL;
+			kextLastIndex = indexIntelSKLFb;
+			break;
+		case CPUInfo::CpuGeneration::KabyLake:	// CPU detect is not reliable here
+		case CPUInfo::CpuGeneration::CoffeeLake:
+			// watch all KBL/CFL/SKL (SKL is always spoof scenario)
+			kextFirstIndex = indexIntelSKL;
+			kextLastIndex = indexIntelCFLFb;
+			// Note, several CFL GPUs are completely broken. They freeze in IGMemoryManager::initCache due to incompatible
+			// configuration, supposedly due to Apple not supporting new MOCS table and forcing Skylake-based format.
+			// See: https://github.com/torvalds/linux/blob/135c5504a600ff9b06e321694fbcac78a9530cd4/drivers/gpu/drm/i915/intel_mocs.c#L181
+			break;
+		case CPUInfo::CpuGeneration::CannonLake:
+			kextFirstIndex = indexIntelCNL;
+			kextLastIndex = indexIntelCNLFb;
+			break;
+		case CPUInfo::CpuGeneration::IceLake:
+			kextFirstIndex = indexIntelICL;
+			kextLastIndex = indexIntelICLHPFb;
+			break;
+		default:
+			SYSLOG("igfx", "found an unsupported processor 0x%X:0x%X, please report this!", family, model);
+			return;
+	}
+
+	// prepare to patch all applicable framebuffer and graphics kexts
+	lilu.onKextLoadForce(&allKexts[kextFirstIndex], kextLastIndex - kextFirstIndex + 1);
 }
 
 void IGFX::deinit() {
@@ -172,9 +242,9 @@ void IGFX::processKernel(KernelPatcher &patcher, DeviceInfo *info) {
 	}
 
 	if (switchOffGraphics)
-		switchOffKextList(allGFXKexts, arrsize(allGFXKexts));
+		switchOffKextList(allGFXKexts);
 	if (switchOffFramebuffer)
-		switchOffKextList(allFBKexts, arrsize(allFBKexts));
+		switchOffKextList(allFBKexts);
 
 	if (moderniseAccelerator) {
 		KernelPatcher::RouteRequest request("__ZN9IOService20copyExistingServicesEP12OSDictionaryjj", wrapCopyExistingServices, orgCopyExistingServices);
@@ -184,12 +254,12 @@ void IGFX::processKernel(KernelPatcher &patcher, DeviceInfo *info) {
 
 bool IGFX::processKext(KernelPatcher &patcher, size_t index, mach_vm_address_t address, size_t size) {
 	// determine if one of the graphics accelerator kexts is loaded
-	auto kextInfo = loadedKextFromIndex(allGFXKexts, arrsize(allGFXKexts), index);
+	auto kextInfo = loadedKextFromIndex(allGFXKexts, index);
 	if (kextInfo) {
 		currentGraphics = kextInfo;
 		DBGLOG("igfx", "currentGraphics loaded %lu, %s", index, currentGraphics->id);
 		// cancel other graphics kexts
-		switchOffKextList(allGFXKexts, arrsize(allGFXKexts), currentGraphics);
+		switchOffKextList(allGFXKexts, currentGraphics);
 
 		if (pavpDisablePatch) {
 			auto callbackSym = "__ZN16IntelAccelerator19PAVPCommandCallbackE22PAVPSessionCommandID_tjPjb";
@@ -218,12 +288,12 @@ bool IGFX::processKext(KernelPatcher &patcher, size_t index, mach_vm_address_t a
 	}
 
 	// determine if one of the framebuffer kexts is loaded
-	kextInfo = loadedKextFromIndex(allFBKexts, arrsize(allFBKexts), index);
+	kextInfo = loadedKextFromIndex(allFBKexts, index);
 	if (kextInfo) {
 		currentFramebuffer = kextInfo;
 		DBGLOG("igfx", "currentFramebuffer loaded %lu, %s", index, currentFramebuffer->id);
 		// cancel other framebuffer kexts
-		switchOffKextList(allFBKexts, arrsize(allFBKexts), currentFramebuffer);
+		switchOffKextList(allFBKexts, currentFramebuffer);
 
 		if (blackScreenPatch) {
 			bool foundSymbol = false;
