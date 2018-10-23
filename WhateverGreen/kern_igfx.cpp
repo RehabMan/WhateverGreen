@@ -137,14 +137,14 @@ void IGFX::init() {
 		loadGuCFirmware = canLoadGuC > 0;
 	}
 
-	size_t kextFirstIndex, kextLastIndex;
+	size_t kextFirstIndex = -1, kextLastIndex = -1;
 
 	switch (cpuGeneration) {
 		case CPUInfo::CpuGeneration::Penryn:
 		case CPUInfo::CpuGeneration::Nehalem:
 		case CPUInfo::CpuGeneration::Westmere:
 			// Do not warn about legacy processors (e.g. Xeon).
-			return;
+			break;
 		case CPUInfo::CpuGeneration::SandyBridge:
 			kextFirstIndex = indexIntelHD3000;
 			kextLastIndex = indexIntelSNBFb;
@@ -184,11 +184,14 @@ void IGFX::init() {
 			break;
 		default:
 			SYSLOG("igfx", "found an unsupported processor 0x%X:0x%X, please report this!", family, model);
-			return;
+			break;
 	}
 
 	// prepare to patch all applicable framebuffer and graphics kexts
-	lilu.onKextLoadForce(&allKexts[kextFirstIndex], kextLastIndex - kextFirstIndex + 1);
+	if (checkKernelArgument("-igfxhookall"))
+		lilu.onKextLoad(allKexts, arrsize(allKexts));
+	else if (-1 != kextFirstIndex)
+		lilu.onKextLoadForce(&allKexts[kextFirstIndex], kextLastIndex - kextFirstIndex + 1);
 }
 
 void IGFX::deinit() {

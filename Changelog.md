@@ -1,7 +1,8 @@
 WhateverGreen Changelog
 =======================
 #### v1.2.x (TBD)
-- Added igfxcpu for igfx specific CPU spoofing (separate from lilucpu)
+- Added kernel flag igfxcpu for igfx specific CPU spoofing (separate from lilucpu)
+- Added kernel flag -igfxhookall to cause kext load hooking for all graphics/framebuffer kexts
 - Added spoof CoffeeLake or KabyLake as Skylake
 - Fixed crashes that may happen when _gPlatformInformationList cannot be resolved
 
